@@ -1,4 +1,3 @@
-
 class Musica {
 
     constructor(nome, artista) {
