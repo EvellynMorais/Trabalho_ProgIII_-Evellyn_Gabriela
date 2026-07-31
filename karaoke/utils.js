@@ -1,5 +1,4 @@
 // utils.js — Módulo utilitário (fornecido pelo professor)
-
 /**
  * Pausa a execução por um número de milissegundos.
  *
