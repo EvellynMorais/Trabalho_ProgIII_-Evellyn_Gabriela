@@ -151,3 +151,31 @@ async function play() {
 play();
 
 module.exports = {musica, play};
+
+async function carregarPlaylist() {
+    const resposta = await fetch('/api/musicas');
+    const musicas = await resposta.json();
+
+    for (const musica of musicas) {
+        const item = document.createElement('li');
+        item.textContent = musica.nome + ' — ' + musica.artista;
+        item.addEventListener('click', () => escolherMusica(musica.id));
+        listaEl.appendChild(item);
+    }
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function tocar() {
+    btnTocar.disabled = true;   // evita dois "plays" ao mesmo tempo
+
+    for (let i = 0; i < musicaAtual.partes.length; i++) {
+        const parte = musicaAtual.partes[i];
+        // TODO: mostrar parte.tag e parte.letra no palco
+        // TODO: atualizar o contador: "parte X de Y"
+        await sleep(parte.tempoEspera);
+    }
+
+    // TODO: mostrar uma mensagem de fim (ex: "🎤 Fim! Escolha outra música.")
+    btnTocar.disabled = false;
+}
