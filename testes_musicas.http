@@ -1,0 +1,75 @@
+@baseUrl = http://localhost:3000
+
+### ============================================
+### TESTES DA API DO KARAOKÊ — MÚLTIPLAS MÚSICAS
+### ============================================
+
+### --- 1. GET: Listar todas as músicas ---
+GET {{baseUrl}}/api/musicas
+
+### --- 2. GET: Buscar música por ID (existente) ---
+GET {{baseUrl}}/api/musicas/1
+
+### --- 3. GET: Buscar música por ID inexistente (espera 404) ---
+GET {{baseUrl}}/api/musicas/999
+
+### --- 4. POST: Criar nova música ---
+POST {{baseUrl}}/api/musicas
+Content-Type: application/json
+
+{
+  "nome": "Billie Jean",
+  "artista": "Michael Jackson"
+}
+
+### --- 5. POST: Tentativa sem campos obrigatórios (espera 400) ---
+POST {{baseUrl}}/api/musicas
+Content-Type: application/json
+
+{
+  "nome": "Faltando artista"
+}
+
+### --- 6. PUT: Atualizar título e artista ---
+PUT {{baseUrl}}/api/musicas/1
+Content-Type: application/json
+
+{
+  "nome": "Beatriz (Ao Vivo)",
+  "artista": "2ZDinizz (Acústico)"
+}
+
+### --- 7. PUT: Atualizar música inexistente (espera 404) ---
+PUT {{baseUrl}}/api/musicas/999
+Content-Type: application/json
+
+{
+  "nome": "Nao existe",
+  "artista": "Ninguem"
+}
+
+### --- 8. PUT: Atualizar sem enviar os campos obrigatórios (espera 400) ---
+PUT {{baseUrl}}/api/musicas/1
+Content-Type: application/json
+
+{
+  "nome": "Só o nome, sem o artista"
+}
+
+### --- 9. DELETE: Remover música ---
+DELETE {{baseUrl}}/api/musicas/2
+
+### --- 10. DELETE: Remover música inexistente (espera 404) ---
+DELETE {{baseUrl}}/api/musicas/999
+
+### --- 11. GET: Verificar estado final da coleção ---
+GET {{baseUrl}}/api/musicas
+
+### --- 12. POST: JSON mal-formado no body (espera 400 pelo middleware de erro) ---
+POST {{baseUrl}}/api/musicas
+Content-Type: application/json
+
+isso aqui nao e um json valido
+
+### --- 13. GET: Content-Type de uma resposta HTML (rota de revisão técnica) ---
+GET {{baseUrl}}/teste
