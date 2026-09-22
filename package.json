@@ -7,8 +7,9 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "serve": "node app.js",
-    "serve_debug": "nodemon app.js"
+    "serve ": "node app.js",
+    "serve_debug": "nodemon app.js",
+    "serve": "node app"
   },
   "dependencies": {
     "express": "^5.2.1"
