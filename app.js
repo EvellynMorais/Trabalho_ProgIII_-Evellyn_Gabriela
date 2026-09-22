@@ -8,7 +8,7 @@ const musicaDAO = require('./dao/musicaDAO');
 
 // 2. Criar a aplicação
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // 3. Middlewares
 app.use(express.json());          // interpreta body com Content-Type: application/json

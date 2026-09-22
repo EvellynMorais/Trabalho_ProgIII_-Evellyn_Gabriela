@@ -12,9 +12,13 @@
     "serve": "node app"
   },
   "dependencies": {
+    "chalk": "^4.1.2",
     "express": "^5.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
