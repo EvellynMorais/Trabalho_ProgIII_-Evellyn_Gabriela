@@ -73,3 +73,56 @@ isso aqui nao e um json valido
 
 ### --- 13. GET: Content-Type de uma resposta HTML (rota de revisão técnica) ---
 GET {{baseUrl}}/teste
+
+{
+    "nome": "Nome da música",
+    "artista": "Nome do artista",
+    "partes": [
+        {
+            "letra": "Texto da parte",
+            "tempoEspera": 5000,
+            "tag": "Intro"
+        },
+        {
+            "letra": "Texto da segunda parte",
+            "tempoEspera": 10000,
+            "tag": "Refrão"
+        }
+    ]
+}
+
+### Inserir uma música
+POST http://localhost:3000/api/musicas
+Content-Type: application/json
+
+{
+    "nome": "Teste Karaokê",
+    "artista": "Artista Teste",
+    "partes": [
+        {
+            "letra": "Primeira parte de uma letra original.",
+            "tempoEspera": 5,
+            "tag": "verso"
+        },
+        {
+            "letra": "Segunda parte de uma letra original.",
+            "tempoEspera": 4,
+            "tag": "refrão"
+        }
+    ]
+}
+
+### Buscar música por ID
+GET http://localhost:3000/api/musicas/4
+
+### Atualizar música
+PUT http://localhost:3000/api/musicas/4
+Content-Type: application/json
+
+{
+    "nome": "Teste Karaokê Atualizado",
+    "artista": "Artista Atualizado"
+}
+
+### Remover música
+DELETE http://localhost:3000/api/musicas/4

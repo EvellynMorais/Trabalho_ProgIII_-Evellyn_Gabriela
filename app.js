@@ -75,31 +75,51 @@ app.get('/api/musicas/:id', async (req, res) => {
 });
 
 // POST /api/musicas — cadastra uma música
+// POST /api/musicas — cadastra música e suas partes
 app.post('/api/musicas', async (req, res) => {
     try {
-        const { nome, artista } = req.body;
+        const { nome, artista, partes = [] } = req.body;
 
         if (
             typeof nome !== 'string' ||
             typeof artista !== 'string' ||
             !nome.trim() ||
-            !artista.trim()
+            !artista.trim() ||
+            !Array.isArray(partes)
         ) {
             return res.status(400).json({
-                erro: 'Campos obrigatórios: nome, artista'
+                erro: 'Nome, artista e partes válidos são obrigatórios'
+            });
+        }
+
+        const partesValidas = partes.every(p =>
+            p &&
+            typeof p.letra === 'string' &&
+            typeof p.tag === 'string' &&
+            Number.isInteger(p.tempoEspera) &&
+            p.tempoEspera >= 0
+        );
+
+        if (!partesValidas) {
+            return res.status(400).json({
+                erro: 'Cada parte precisa de letra, tag e tempoEspera válido'
             });
         }
 
         const novaMusica = await musicaDAO.inserir(
             nome.trim(),
-            artista.trim()
+            artista.trim(),
+            partes
         );
 
         res.status(201).json(novaMusica);
 
     } catch (error) {
         console.error('Erro ao cadastrar música:', error.message);
-        res.status(500).json({ erro: 'Erro ao cadastrar música' });
+
+        res.status(500).json({
+            erro: 'Erro ao cadastrar música'
+        });
     }
 });
 

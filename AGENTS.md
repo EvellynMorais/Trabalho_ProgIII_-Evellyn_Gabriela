@@ -92,3 +92,4 @@ O trabalho pede um registro breve no README. Ao fim de uma sessão útil, sugira
 > Ferramenta: ___ · Parte em que ajudou: ___ · Como conferimos: ___
 > Ferramenta: GitHub Copilot · Parte em que ajudou: diagnóstico do deploy · Como conferimos: npm start retornou Missing script: "start"
 > Ferramenta: GitHub Copilot · Parte em que ajudou: dados de exemplo no Supabase · Como conferimos: tabela musicas no Table Editor
+> Ferramenta: ChatGPT · Parte em que ajudou: Ligar e verificar o funcionamento do projeto ao banco de dados · Como conferimos: testando a adição de informações

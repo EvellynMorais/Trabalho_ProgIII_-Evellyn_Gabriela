@@ -10,7 +10,8 @@
     "start": "node app.js",
     "serve ": "node app.js",
     "serve_debug": "nodemon app.js",
-    "serve": "node app"
+    "serve": "node app",
+    "migrar": "node migrarDados.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
