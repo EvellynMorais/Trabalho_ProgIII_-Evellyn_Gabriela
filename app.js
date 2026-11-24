@@ -1,8 +1,7 @@
 // app.js — Configuração do Express + rotas + middlewares
-// A partir desta versão, as rotas não manipulam mais um array de músicas
-// diretamente: elas delegam tudo para o musicaDAO (padrão DAO).
+// As rotas delegam as operações para o musicaDAO.
 
-// 1. Importar o Express e o DAO (instância única / Singleton)
+// 1. Importar o Express e o DAO
 const express = require('express');
 const musicaDAO = require('./dao/musicaDAO');
 
@@ -11,103 +10,188 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 3. Middlewares
-app.use(express.json());          // interpreta body com Content-Type: application/json
-app.use(express.static('public')); // serve public/index.html, estilo.css, player.js
+app.use(express.json());
+app.use(express.static('public'));
 
-
+// Rota de teste
 app.get('/teste', (req, res) => {
     const html = '<html><body><b>Este é o meu site Express.js.</b></body></html>';
-    res.send(html); // Content-Type vira text/html automaticamente
+    res.send(html);
 });
 
 // =================================================================
 // API de músicas — /api/musicas
 // =================================================================
 
-// GET /api/musicas — lista todas (resumo, sem as partes)
-app.get('/api/musicas', (req, res) => {
-    const musicas = musicaDAO.listarTodas();
+// GET /api/musicas — lista todas as músicas
+app.get('/api/musicas', async (req, res) => {
+    try {
+        const musicas = await musicaDAO.listarTodas();
 
-    // Retorna sem as partes para não sobrecarregar a listagem
-    const resumo = [];
-    for (let i = 0; i < musicas.length; i++) {
-        const m = musicas[i];
-        resumo.push({
-            id: m.id,
-            nome: m.nome,
-            artista: m.artista,
-            totalPartes: m.partes.length
-        });
+        const resumo = [];
+
+        for (let i = 0; i < musicas.length; i++) {
+            const m = musicas[i];
+
+            resumo.push({
+                id: m.id,
+                nome: m.nome,
+                artista: m.artista,
+                totalPartes: m.partes.length
+            });
+        }
+
+        res.status(200).json(resumo);
+
+    } catch (error) {
+        console.error('Erro ao listar músicas:', error.message);
+        res.status(500).json({ erro: 'Erro ao listar músicas' });
     }
-
-    res.status(200).json(resumo);
 });
 
-// GET /api/musicas/:id — retorna uma música específica com as partes
-app.get('/api/musicas/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const musica = musicaDAO.buscarPorId(id);
+// GET /api/musicas/:id — busca uma música com suas partes
+app.get('/api/musicas/:id', async (req, res) => {
+    try {
+        const id = Number(req.params.id);
 
-    if (!musica) {
-        return res.status(404).json({ erro: `Música com id ${id} não encontrada` });
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ erro: 'ID inválido' });
+        }
+
+        const musica = await musicaDAO.buscarPorId(id);
+
+        if (!musica) {
+            return res.status(404).json({
+                erro: `Música com id ${id} não encontrada`
+            });
+        }
+
+        res.status(200).json(musica);
+
+    } catch (error) {
+        console.error('Erro ao buscar música:', error.message);
+        res.status(500).json({ erro: 'Erro ao buscar música' });
     }
-
-    res.status(200).json(musica);
 });
 
-// POST /api/musicas — cria uma nova música
-app.post('/api/musicas', (req, res) => {
-    const { nome, artista } = req.body;
+// POST /api/musicas — cadastra uma música
+app.post('/api/musicas', async (req, res) => {
+    try {
+        const { nome, artista } = req.body;
 
-    if (!nome || !artista) {
-        return res.status(400).json({ erro: 'Campos obrigatórios: nome, artista' });
+        if (
+            typeof nome !== 'string' ||
+            typeof artista !== 'string' ||
+            !nome.trim() ||
+            !artista.trim()
+        ) {
+            return res.status(400).json({
+                erro: 'Campos obrigatórios: nome, artista'
+            });
+        }
+
+        const novaMusica = await musicaDAO.inserir(
+            nome.trim(),
+            artista.trim()
+        );
+
+        res.status(201).json(novaMusica);
+
+    } catch (error) {
+        console.error('Erro ao cadastrar música:', error.message);
+        res.status(500).json({ erro: 'Erro ao cadastrar música' });
     }
-
-    const novaMusica = musicaDAO.inserir(nome, artista);
-    res.status(201).json(novaMusica);
 });
 
-// PUT /api/musicas/:id — atualiza nome e artista de uma música existente
-app.put('/api/musicas/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const { nome, artista } = req.body;
+// PUT /api/musicas/:id — atualiza uma música
+app.put('/api/musicas/:id', async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const { nome, artista } = req.body;
 
-    if (!nome || !artista) {
-        return res.status(400).json({ erro: 'Campos obrigatórios: nome, artista' });
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ erro: 'ID inválido' });
+        }
+
+        if (
+            typeof nome !== 'string' ||
+            typeof artista !== 'string' ||
+            !nome.trim() ||
+            !artista.trim()
+        ) {
+            return res.status(400).json({
+                erro: 'Campos obrigatórios: nome, artista'
+            });
+        }
+
+        const musicaAtualizada = await musicaDAO.atualizar(
+            id,
+            nome.trim(),
+            artista.trim()
+        );
+
+        if (!musicaAtualizada) {
+            return res.status(404).json({
+                erro: `Música com id ${id} não encontrada`
+            });
+        }
+
+        res.status(200).json(musicaAtualizada);
+
+    } catch (error) {
+        console.error('Erro ao atualizar música:', error.message);
+        res.status(500).json({ erro: 'Erro ao atualizar música' });
     }
-
-    const musicaAtualizada = musicaDAO.atualizar(id, nome, artista);
-
-    if (!musicaAtualizada) {
-        return res.status(404).json({ erro: `Música com id ${id} não encontrada` });
-    }
-
-    res.status(200).json(musicaAtualizada);
 });
 
 // DELETE /api/musicas/:id — remove uma música
-app.delete('/api/musicas/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const musicaRemovida = musicaDAO.remover(id);
+app.delete('/api/musicas/:id', async (req, res) => {
+    try {
+        const id = Number(req.params.id);
 
-    if (!musicaRemovida) {
-        return res.status(404).json({ erro: `Música com id ${id} não encontrada` });
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ erro: 'ID inválido' });
+        }
+
+        const musicaRemovida = await musicaDAO.remover(id);
+
+        if (!musicaRemovida) {
+            return res.status(404).json({
+                erro: `Música com id ${id} não encontrada`
+            });
+        }
+
+        res.status(200).json({
+            mensagem: 'Música removida com sucesso',
+            musica: musicaRemovida
+        });
+
+    } catch (error) {
+        console.error('Erro ao remover música:', error.message);
+        res.status(500).json({ erro: 'Erro ao remover música' });
     }
-
-    res.status(200).json({ mensagem: 'Música removida com sucesso', musica: musicaRemovida });
 });
 
+// =================================================================
+// Tratamento de erros
+// =================================================================
 
 app.use((err, req, res, next) => {
-    // JSON mal-formado enviado pelo cliente (ex: texto puro sem { })
+
+    // JSON malformado
     if (err.type === 'entity.parse.failed' || err instanceof SyntaxError) {
-        console.error('Erro: JSON mal-formado no corpo da requisição:', err.message);
-        return res.status(400).json({ erro: 'JSON mal-formado no corpo da requisição.' });
+        console.error('Erro de JSON:', err.message);
+
+        return res.status(400).json({
+            erro: 'JSON malformado no corpo da requisição.'
+        });
     }
 
-    // Qualquer outro erro não tratado dentro de uma rota
     console.error('Erro no servidor:', err.message);
-    res.status(500).json({ erro: 'Erro interno do servidor' });
+
+    res.status(500).json({
+        erro: 'Erro interno do servidor'
+    });
 });
 
 // 4. Iniciar o servidor
