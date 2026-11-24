@@ -82,6 +82,7 @@ Os guias mostram código completo nas partes de preparação; nas partes avaliad
 
 ## Segurança das chaves
 
+
 O valor de `SUPABASE_SECRET_KEY`, senhas e tokens ficam só no `.env` (fora do Git) e no ambiente do servidor publicado. Nunca peça, repita nem escreva esses valores. Se o estudante colar uma chave na conversa, diga que ela precisa ser trocada no painel do Supabase (Project Settings → API Keys). Antes de um `git add`, lembre de conferir se o `.env` está no `.gitignore`.
 
 ## Registro do uso de IA
@@ -89,3 +90,5 @@ O valor de `SUPABASE_SECRET_KEY`, senhas e tokens ficam só no `.env` (fora do G
 O trabalho pede um registro breve no README. Ao fim de uma sessão útil, sugira esta linha para o estudante completar:
 
 > Ferramenta: ___ · Parte em que ajudou: ___ · Como conferimos: ___
+> Ferramenta: GitHub Copilot · Parte em que ajudou: diagnóstico do deploy · Como conferimos: npm start retornou Missing script: "start"
+> Ferramenta: GitHub Copilot · Parte em que ajudou: dados de exemplo no Supabase · Como conferimos: tabela musicas no Table Editor
