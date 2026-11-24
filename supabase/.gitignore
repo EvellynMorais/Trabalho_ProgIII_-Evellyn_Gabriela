@@ -1,5 +1,0 @@
-.env
-node_modules/
-
-SUPABASE_URL=https://kymzyvimrjilbnbupqjo.supabase.co
-SUPABASE_SECRET_KEY=sua-chave-secreta
